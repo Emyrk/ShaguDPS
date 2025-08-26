@@ -246,7 +246,10 @@ local function barTooltipShow()
   GameTooltip:AddLine("Details:")
 
   for attack, damage in spairs(segment[this.unit], sort_algorithms.single_spell) do
-    if attack and not internals[attack] and type(damage) ~= "table" then
+    if attack == "_events" then
+      -- TODO: Add details here
+      
+    elseif attack and not internals[attack] then
       local percent = damage == 0 and 0 or round(damage / segment[this.unit]["_sum"] * 100,1)
       if segment[this.unit]["_effective"] and segment[this.unit]["_effective"][attack] then
         -- heal / effective heal
