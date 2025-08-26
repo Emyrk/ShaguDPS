@@ -191,6 +191,10 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
     -- detect source and write initial table
     if not entry[source] then
       local type = parser:ScanName(source)
+      if type == "PET" and datatype == "taken" then
+        return -- Do not track pet damage right now
+      end
+
       if type == "PET" then
         -- create owner table if not yet existing
         local owner = data["classes"][source]
