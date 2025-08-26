@@ -146,6 +146,26 @@ parser.ScanName = function(self, name)
   end
 end
 
+parser.UpdateTaken = function (source) 
+  for segment = 0, 1 do
+    local entry = data["taken"][segment]
+    if not entry[source] then
+      entry[source] = { ["_sum"] = 0, ["_ctime"] = 1 }
+    end
+
+    entry[source]["_ctime"] = entry[source]["_ctime"] or 1
+    entry[source]["_tick"] = entry[source]["_tick"] or GetTime()
+
+    if entry[source]["_tick"] + 5 < GetTime() then
+      entry[source]["_tick"] = GetTime()
+      entry[source]["_ctime"] = entry[source]["_ctime"] + 5
+    else
+      entry[source]["_ctime"] = entry[source]["_ctime"] + (GetTime() - entry[source]["_tick"])
+      entry[source]["_tick"] = GetTime()
+    end
+  end
+end
+
 parser.AddData = function(self, source, action, target, value, school, datatype)
   -- abort on invalid input
   if type(source) ~= "string" then return end
@@ -191,6 +211,7 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
         -- Track the inverse, which is damage taken.
         self:AddData(target, action, source, value, school, "taken")
       end
+
       if type == "PET" and datatype == "taken" then
         return -- Do not track pet damage right now
       end
@@ -228,6 +249,7 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
       end
     end
 
+    parser.UpdateTaken(source)
     if entry[source] then
       -- write overall value and per spell
       entry[source][action] = (entry[source][action] or 0) + tonumber(value)
