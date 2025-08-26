@@ -159,11 +159,6 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
     return
   end
 
-  if datatype == "damage" then
-    -- Also track damage taken
-    self:AddData(target, action, source, value, school, "taken")
-  end
-
   -- clear "current" on fight start
   if start_next_segment and data["classes"][source] and data["classes"][source] ~= "__other__" then
     data["damage"][1] = {}
@@ -191,6 +186,11 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
     -- detect source and write initial table
     if not entry[source] then
       local type = parser:ScanName(source)
+      
+      if not type or type == "OTHER" and datatype == "damage"then
+        -- Track the inverse, which is damage taken.
+        self:AddData(target, action, source, value, school, "taken")
+      end
       if type == "PET" and datatype == "taken" then
         return -- Do not track pet damage right now
       end

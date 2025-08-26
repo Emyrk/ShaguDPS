@@ -548,6 +548,12 @@ local function Refresh(self, force, report)
     elseif config[wid].view == 4 then
       self.btnHPS.caption:SetTextColor(1,.9,0,1)
       self.btnMode.caption:SetText("HPS")
+    elseif config[wid].view == 5 then
+      self.btnTaken.caption:SetTextColor(1,.9,0,1)
+      self.btnMode.caption:SetText("Taken")
+    elseif config[wid].view == 6 then
+      self.btnTPS.caption:SetTextColor(1,.9,0,1)
+      self.btnMode.caption:SetText("TPS")
     end
 
     if config[wid].segment == 0 then
@@ -762,6 +768,8 @@ local function CreateWindow(wid)
       frame.btnDPS:Hide()
       frame.btnHeal:Hide()
       frame.btnHPS:Hide()
+      frame.btnTaken:Hide()
+      frame.btnTPS:Hide()
       frame.btnOverall:Hide()
       frame.btnCurrent:Hide()
     else
@@ -769,6 +777,8 @@ local function CreateWindow(wid)
       frame.btnDPS:Hide()
       frame.btnHeal:Hide()
       frame.btnHPS:Hide()
+      frame.btnTaken:Hide()
+      frame.btnTPS:Hide()
       frame.btnOverall:Show()
       frame.btnCurrent:Show()
     end
@@ -787,7 +797,7 @@ local function CreateWindow(wid)
   frame.btnMode.caption:SetFont(STANDARD_TEXT_FONT, 9)
   frame.btnMode.caption:SetText("Mode: Damage")
   frame.btnMode.caption:SetAllPoints()
-  frame.btnMode.tooltip = { "Select Mode", "|cffffffffDamage, DPS, Heal, HPS" }
+  frame.btnMode.tooltip = { "Select Mode", "|cffffffffDamage, DPS, Heal, HPS, Taken, TPS" }
   frame.btnMode:SetScript("OnEnter", btnEnter)
   frame.btnMode:SetScript("OnLeave", btnLeave)
   frame.btnMode:SetScript("OnClick", function()
@@ -796,6 +806,8 @@ local function CreateWindow(wid)
       frame.btnDPS:Hide()
       frame.btnHeal:Hide()
       frame.btnHPS:Hide()
+      frame.btnTaken:Hide()
+      frame.btnTPS:Hide()
       frame.btnOverall:Hide()
       frame.btnCurrent:Hide()
     else
@@ -803,6 +815,8 @@ local function CreateWindow(wid)
       frame.btnDPS:Show()
       frame.btnHeal:Show()
       frame.btnHPS:Show()
+      frame.btnTaken:Show()
+      frame.btnTPS:Show()
       frame.btnOverall:Hide()
       frame.btnCurrent:Hide()
     end
@@ -1027,6 +1041,8 @@ local function CreateWindow(wid)
     frame.btnDPS,
     frame.btnHeal,
     frame.btnHPS,
+    frame.btnTaken,
+    frame.btnTPS,
     frame.btnOverall,
     frame.btnCurrent
   }
