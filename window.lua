@@ -85,6 +85,28 @@ local view_templates = {
     bar_string = "%s (%.1f%%)",
     bar_string_params = { "effective_value_persecond", "effective_percent" },
   },
+  [5] = { -- taken
+    name = "Taken",
+    sort = "normal",
+    bar_max = "best",
+    bar_val = "value",
+    bar_lower_max = nil,
+    bar_lower_val = nil,
+    chat_string = "%s (%.1f%%)",
+    bar_string = "%s (%.1f%%)",
+    bar_string_params = { "value", "percent" },
+  },
+  [6] = { -- tps
+    name = "TPS",
+    sort = "per_second",
+    bar_max = "persecond_best",
+    bar_val = "value_persecond",
+    bar_lower_max = nil,
+    bar_lower_val = nil,
+    chat_string = "%s (%.1f%%)",
+    bar_string = "%s (%.1f%%)",
+    bar_string_params = { "value_persecond", "percent_persecond" },
+  },
 }
 
 -- panel button templates
@@ -98,6 +120,8 @@ local menubuttons = {
   ["DPS"]      = { 1, 2, 25.5,  "DPS View",        "|cffffffffShow Damage Per Second",  "view" },
   ["Heal"]     = { 2, 3, 25.5,  "Heal View",       "|cffffffffShow Healing Done",       "view" },
   ["HPS"]      = { 3, 4, 25.5,  "HPS View",        "|cffffffffShow Heal Per Second",    "view" },
+  ["Taken"]    = { 4, 5, 25.5,  "Taken View",      "|cffffffffShow Damage Taken",       "view" },
+  ["TPS"]      = { 5, 6, 25.5,  "TPS View",        "|cffffffffShow Taken Per Second",   "view" },
 }
 
 -- default colors of chat types
@@ -267,6 +291,16 @@ local function ResetData()
   -- clear current heal data
   for k, v in pairs(data.heal[1]) do
     data.heal[1][k] = nil
+  end
+
+  -- clear overall taken data
+  for k, v in pairs(data.taken[0]) do
+    data.taken[0][k] = nil
+  end
+
+  -- clear current taken data
+  for k, v in pairs(data.taken[1]) do
+    data.taken[1][k] = nil
   end
 
   for i=1,10 do
@@ -539,6 +573,8 @@ local function Refresh(self, force, report)
     self.segment = data.damage[(config[wid].segment or 0)]
   elseif config[wid].view == 3 or config[wid].view == 4 then
     self.segment = data.heal[(config[wid].segment or 0)]
+  elseif config[wid].view == 5 or config[wid].view == 6 then
+    self.segment = data.taken[(config[wid].segment or 0)]
   end
 
   -- read view settings
