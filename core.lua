@@ -59,6 +59,11 @@ local data = {
     [1] = {}, -- current
   },
 
+  recent = {
+    [0] = {}, -- overall
+    [1] = {}, -- current
+  },
+
   classes = {},
 }
 
@@ -91,6 +96,7 @@ local internals = {
   ["_tick"] = true,
   ["_esum"] = true,
   ["_effective"] = true,
+  ["_events"] = true,
 }
 
 -- create core component frames

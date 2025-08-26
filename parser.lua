@@ -184,6 +184,7 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
     data["damage"][1] = {}
     data["heal"][1] = {}
     data["taken"][1] = {}
+    data["recent"][1] = {}
 
     start_next_segment = nil
   end
@@ -206,10 +207,20 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
     -- detect source and write initial table
     if not entry[source] then
       local type = parser:ScanName(source)
-      
-      if not type or type == "OTHER" and datatype == "damage"then
+
+      local targetType = parser:ScanName(target)
+      if targetType and targetType == "PLAYER" and datatype == "damage"then
         -- Track the inverse, which is damage taken.
-        self:AddData(target, action, source, value, school, "taken")
+        -- was (target, action, source, source, value, school, "taken")
+        -- Changed action to "source" so we know what npc caused the damage.
+        -- TODO: Bring back in the action somehow. Maybe source:action?
+        local actionIs = action
+        if source then
+          actionIs = source .. ": " .. action
+        end
+        self:AddData(target, actionIs, source, value, school, "taken")
+        -- Also track recent damage taken
+        self:AddRecentDamage(target, value)
       end
 
       if type == "PET" and datatype == "taken" then
@@ -250,6 +261,7 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
     end
 
     parser.UpdateTaken(source)
+    parser.AddRecentDamage(source, 0)
     if entry[source] then
       -- write overall value and per spell
       entry[source][action] = (entry[source][action] or 0) + tonumber(value)
@@ -279,6 +291,47 @@ parser.AddData = function(self, source, action, target, value, school, datatype)
 
   for id, callback in pairs(parser.callbacks.refresh) do
     callback()
+  end
+end
+
+-- Track recent damage (last 5 seconds)
+parser.AddRecentDamage = function(self, target, value)
+  if not target then return end
+  local currentTime = GetTime()
+  
+  for segment = 0, 1 do
+    local entry = data["recent"][segment]
+    
+    -- Initialize target entry if not exists
+    if not entry[target] then
+      entry[target] = { ["_sum"] = 0, ["_ctime"] = 1, ["_events"] = {} }
+    end
+    
+    -- Add new damage event with timestamp
+    if value ~= 0 then
+      table.insert(entry[target]["_events"], { value = value, time = currentTime })
+    end
+
+    -- Clean up old events (older than 5 seconds)
+    local events = entry[target]["_events"]
+    local i = 1
+    start = table.getn(events)
+    while i <= table.getn(events) do
+      if currentTime - events[i].time > 5 then
+        table.remove(events, i)
+      else
+        i = i + 1
+      end
+    end
+    
+    -- Recalculate sum from recent events
+    local sum = 0
+    for _, event in ipairs(events) do
+      if event and event.value then
+        sum = sum + event.value
+      end
+    end
+    entry[target]["_sum"] = sum
   end
 end
 

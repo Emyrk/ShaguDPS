@@ -107,6 +107,17 @@ local view_templates = {
     bar_string = "%s (%.1f%%)",
     bar_string_params = { "value_persecond", "percent_persecond" },
   },
+  [7] = { -- recent
+    name = "Recent",
+    sort = "normal",
+    bar_max = "best",
+    bar_val = "value",
+    bar_lower_max = nil,
+    bar_lower_val = nil,
+    chat_string = "%s (%.1f%%)",
+    bar_string = "%s (%.1f%%)",
+    bar_string_params = { "value", "percent" },
+  },
 }
 
 -- panel button templates
@@ -122,6 +133,7 @@ local menubuttons = {
   ["HPS"]      = { 3, 4, 25.5,  "HPS View",        "|cffffffffShow Heal Per Second",    "view" },
   ["Taken"]    = { 4, 5, 25.5,  "Taken View",      "|cffffffffShow Damage Taken",       "view" },
   ["TPS"]      = { 5, 6, 25.5,  "TPS View",        "|cffffffffShow Taken Per Second",   "view" },
+  ["Recent"]   = { 6, 7, 25.5,  "Recent View",     "|cffffffffShow Recent Damage (5s)", "view" },
 }
 
 -- default colors of chat types
@@ -554,6 +566,9 @@ local function Refresh(self, force, report)
     elseif config[wid].view == 6 then
       self.btnTPS.caption:SetTextColor(1,.9,0,1)
       self.btnMode.caption:SetText("TPS")
+    elseif config[wid].view == 7 then
+      self.btnRecent.caption:SetTextColor(1,.9,0,1)
+      self.btnMode.caption:SetText("Recent")
     end
 
     if config[wid].segment == 0 then
@@ -581,6 +596,8 @@ local function Refresh(self, force, report)
     self.segment = data.heal[(config[wid].segment or 0)]
   elseif config[wid].view == 5 or config[wid].view == 6 then
     self.segment = data.taken[(config[wid].segment or 0)]
+  elseif config[wid].view == 7 then
+    self.segment = data.recent[(config[wid].segment or 0)]
   end
 
   -- read view settings
@@ -770,6 +787,7 @@ local function CreateWindow(wid)
       frame.btnHPS:Hide()
       frame.btnTaken:Hide()
       frame.btnTPS:Hide()
+      frame.btnRecent:Hide()
       frame.btnOverall:Hide()
       frame.btnCurrent:Hide()
     else
@@ -779,6 +797,7 @@ local function CreateWindow(wid)
       frame.btnHPS:Hide()
       frame.btnTaken:Hide()
       frame.btnTPS:Hide()
+      frame.btnRecent:Hide()
       frame.btnOverall:Show()
       frame.btnCurrent:Show()
     end
@@ -808,6 +827,7 @@ local function CreateWindow(wid)
       frame.btnHPS:Hide()
       frame.btnTaken:Hide()
       frame.btnTPS:Hide()
+      frame.btnRecent:Hide()
       frame.btnOverall:Hide()
       frame.btnCurrent:Hide()
     else
@@ -817,6 +837,7 @@ local function CreateWindow(wid)
       frame.btnHPS:Show()
       frame.btnTaken:Show()
       frame.btnTPS:Show()
+      frame.btnRecent:Show()
       frame.btnOverall:Hide()
       frame.btnCurrent:Hide()
     end
@@ -1043,6 +1064,7 @@ local function CreateWindow(wid)
     frame.btnHPS,
     frame.btnTaken,
     frame.btnTPS,
+    frame.btnRecent,
     frame.btnOverall,
     frame.btnCurrent
   }
